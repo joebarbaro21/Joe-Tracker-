@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Generate PWA Icons</title>
+  <style>
+    body { font-family: sans-serif; padding: 24px; background: #030712; color: #fff; }
+    canvas { border: 1px solid #222; border-radius: 8px; margin: 8px; }
+    button { padding: 10px 20px; background: #4ade80; color: #000; border: none;
+             border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    a { display: block; color: #60a5fa; margin: 6px 0; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h2 style="color:#4ade80">PWA Icon Generator</h2>
+  <p style="color:#6b7280;font-size:13px">Нажми → сохрани в <code>public/icons/</code></p>
+  <div id="canvases"></div>
+  <button onclick="generate()">Сгенерировать</button>
+  <div id="links" style="margin-top:16px"></div>
+  <script>
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext("2d");
+      const cx = size / 2, cy = size / 2;
+      ctx.fillStyle = "#030712";
+      ctx.fillRect(0, 0, size, size);
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, size * 0.22);
+      ctx.fillStyle = "#0f1b0f"; ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx, cy - size*0.05, size*0.28, 0, Math.PI*2);
+      ctx.strokeStyle = "#1a2a1a"; ctx.lineWidth = size*0.04; ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy - size*0.05, size*0.28, -Math.PI/2, -Math.PI/2 + Math.PI*1.5);
+      ctx.strokeStyle = "#4ade80"; ctx.lineWidth = size*0.07; ctx.lineCap = "round"; ctx.stroke();
+      ctx.fillStyle = "#fff";
+      ctx.font = `bold ${Math.round(size*0.13)}px -apple-system,sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("75.4", cx, cy - size*0.05);
+      ctx.fillStyle = "#6b7280";
+      ctx.font = `${Math.round(size*0.07)}px -apple-system,sans-serif`;
+      ctx.fillText("кг", cx, cy + size*0.11);
+      ctx.fillStyle = "#4ade80";
+      ctx.font = `bold ${Math.round(size*0.07)}px -apple-system,sans-serif`;
+      ctx.fillText("ТРЕКЕР", cx, cy + size*0.34);
+    }
+    function generate() {
+      const c = document.getElementById("canvases");
+      const l = document.getElementById("links");
+      c.innerHTML = l.innerHTML = "";
+      [180, 192, 512].forEach(size => {
+        const cv = document.createElement("canvas");
+        cv.width = cv.height = size;
+        cv.style.width = cv.style.height = Math.min(size, 128) + "px";
+        c.appendChild(cv); drawIcon(cv, size);
+        cv.toBlob(blob => {
+          const a = Object.assign(document.createElement("a"), {
+            href: URL.createObjectURL(blob),
+            download: `icon-${size}.png`,
+            textContent: `⬇ icon-${size}.png → public/icons/`
+          });
+          l.appendChild(a);
+        }, "image/png");
+      });
+    }
+  </script>
+</body>
+</html>
